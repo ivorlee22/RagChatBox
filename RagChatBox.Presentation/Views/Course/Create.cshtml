@@ -1,0 +1,119 @@
+@model RagChatBox.Presentation.Models.CourseViewModel
+@{
+    ViewData["Title"] = "Thêm Khóa học";
+    bool isStudent = User.IsInRole("student");
+    bool isTeacher = User.IsInRole("teacher");
+}
+
+<div class="page-container m-0 p-0">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="glass-panel">
+                <div class="mb-4">
+                    <h2 class="h3 mb-1">
+                        <span class="text-gradient">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            @if (isStudent) { <text>Tạo lớp học cá nhân</text> }
+                            else { <text>Tạo khóa học mới</text> }
+                        </span>
+                    </h2>
+                    <p class="text-muted-custom">
+                        @if (isStudent)
+                        { <text>Lớp cá nhân chỉ mình bạn thấy, dùng để lưu tài liệu học tập riêng.</text> }
+                        else
+                        { <text>Điền thông tin bên dưới để tạo khóa học mới.</text> }
+                    </p>
+                </div>
+
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert-custom-danger" role="alert"></div>
+
+                    <input asp-for="CourseType" type="hidden" />
+
+                    <div class="form-group-custom">
+                        <label asp-for="Name" class="form-label-custom"><i class="bi bi-book me-2"></i>Tên khóa học / môn học</label>
+                        <input asp-for="Name" class="form-control-custom"
+                               placeholder="Ví dụ: Lập trình .NET nâng cao (PRN222)"
+                               autocomplete="off" />
+                        <span asp-validation-for="Name" class="validation-error"></span>
+                    </div>
+
+                    @if (User.IsInRole("admin"))
+                    {
+                        <div class="form-group-custom">
+                            <label asp-for="CreatedBy" class="form-label-custom"><i class="bi bi-person-badge me-2"></i>Giáo viên giảng dạy</label>
+                            <select asp-for="CreatedBy" class="form-select form-control-custom" asp-items="@(new SelectList(ViewBag.Teachers, "Id", "Name"))">
+                                <option value="">-- Chưa gán / Để trống --</option>
+                            </select>
+                            <span asp-validation-for="CreatedBy" class="validation-error"></span>
+                        </div>
+                    }
+
+                    <div class="form-group-custom">
+                        <label asp-for="Description" class="form-label-custom"><i class="bi bi-card-text me-2"></i>Mô tả</label>
+                        <textarea asp-for="Description" rows="3" class="form-control-custom"
+                                  placeholder="Nhập mô tả khóa học..."></textarea>
+                        <span asp-validation-for="Description" class="validation-error"></span>
+                    </div>
+
+                    @* Teacher / Admin only fields *@
+                    @if (!isStudent)
+                    {
+                        <div class="form-group-custom">
+                            <label asp-for="CoursePassword" class="form-label-custom"><i class="bi bi-shield-lock me-2"></i>Mật khẩu lớp</label>
+                            <div class="input-group-custom">
+                                <input asp-for="CoursePassword" class="form-control-custom"
+                                       type="password" autocomplete="new-password"
+                                       placeholder="Để trống nếu không cần mật khẩu" />
+                                <button type="button" class="btn-icon-toggle border-0" id="toggleCoursePassword" style="background:none;" title="Hiện/ẩn mật khẩu">
+                                    <span id="togglePasswordText" class="text-muted small">Hiện</span>
+                                </button>
+                            </div>
+                            <small class="text-muted-custom">Học sinh cần nhập mật khẩu này khi tham gia lớp.</small>
+                            <span asp-validation-for="CoursePassword" class="validation-error"></span>
+                        </div>
+
+                        <div class="form-group-custom">
+                            <div class="form-check-custom d-flex align-items-center gap-3">
+                                <input asp-for="IsVisible" class="form-check-input" type="checkbox" id="isVisibleCheck" />
+                                <label asp-for="IsVisible" class="form-label-custom mb-0">
+                                    <i class="bi bi-eye me-2"></i>
+                                    Hiển thị lớp học cho học sinh (có thể tìm kiếm và tham gia)
+                                </label>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn-premium flex-grow-1">
+                            <i class="bi bi-save"></i>
+                            Lưu khóa học
+                        </button>
+                        <a asp-action="Index" class="btn-secondary-custom"><i class="bi bi-x-circle"></i>Hủy bỏ</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @if (!isStudent)
+    {
+        <script>
+            document.getElementById('toggleCoursePassword')?.addEventListener('click', function () {
+                const input = document.getElementById('CoursePassword');
+                const textSpan = document.getElementById('togglePasswordText');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    textSpan.textContent = 'Ẩn';
+                } else {
+                    input.type = 'password';
+                    textSpan.textContent = 'Hiện';
+                }
+            });
+        </script>
+    }
+}

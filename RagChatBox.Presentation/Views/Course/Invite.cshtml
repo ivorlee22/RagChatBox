@@ -1,0 +1,45 @@
+@model RagChatBox.Presentation.Models.InviteStudentViewModel
+@{
+    ViewData["Title"] = "Mời học sinh";
+}
+
+<div class="page-container m-0 p-0">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="glass-panel">
+                <div class="mb-4">
+                    <h2 class="h3 mb-1"><span class="text-gradient"><i class="bi bi-person-plus me-2"></i>Mời học sinh vào lớp</span></h2>
+                    <p class="text-muted-custom">Lớp: <span class="text-dark fw-semibold">@Model.CourseName</span></p>
+                </div>
+
+                <form asp-action="Invite" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="CourseId" type="hidden" />
+                    <input asp-for="CourseName" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="alert-custom-danger mb-3" role="alert"></div>
+
+                    <div class="form-group-custom">
+                        <label asp-for="StudentUsername" class="form-label-custom"><i class="bi bi-at me-2"></i>Username học sinh</label>
+                        <input asp-for="StudentUsername" class="form-control-custom"
+                               placeholder="Nhập username của học sinh (email đăng ký)"
+                               autocomplete="off" autofocus />
+                        <small class="text-muted-custom">Học sinh sẽ nhận được lời mời và cần chấp nhận để vào lớp.</small>
+                        <span asp-validation-for="StudentUsername" class="validation-error"></span>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn-premium flex-grow-1">
+                            <i class="bi bi-send"></i>
+                            Gửi lời mời
+                        </button>
+                        <a asp-action="MyStudents" asp-route-id="@Model.CourseId" class="btn-secondary-custom"><i class="bi bi-x-circle"></i>Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

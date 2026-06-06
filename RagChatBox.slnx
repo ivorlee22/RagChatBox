@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="RagChatBox.BLL/RagChatBox.BLL.csproj" />
+  <Project Path="RagChatBox.DAL/RagChatBox.DAL.csproj" />
+  <Project Path="RagChatBox.Presentation/RagChatBox.Presentation.csproj" />
+</Solution>
+

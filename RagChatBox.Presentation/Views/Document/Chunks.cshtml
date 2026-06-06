@@ -1,0 +1,120 @@
+@model IEnumerable<RagChatBox.DAL.Entities.DocumentChunk>
+@{
+    var document = ViewBag.Document as RagChatBox.DAL.Entities.Document;
+    var course = ViewBag.Course as RagChatBox.DAL.Entities.Course;
+    ViewData["Title"] = $"Đoạn văn bản chỉ mục - {document?.FileName}";
+}
+
+<div class="page-container m-0 p-0">
+    <!-- Header Area -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <a asp-action="Index" asp-route-courseId="@course?.Id" class="text-muted-custom nav-link-custom p-1 d-inline-flex align-items-center justify-content-center" style="background: none; border-radius: 50%; text-decoration: none;" title="Quay lại danh sách tài liệu">
+                    <i class="bi bi-arrow-left-circle fs-4"></i>
+                </a>
+                <h1 class="h2 mb-0"><i class="bi bi-file-earmark-medical text-gradient me-2"></i>Dữ liệu chỉ mục RAG</h1>
+            </div>
+            <p class="text-muted-custom ms-4 ps-2">
+                Tài liệu: <span class="text-dark fw-semibold">@document?.FileName</span> 
+                • Khóa học: <span class="text-dark fw-semibold">@course?.Name</span>
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <span class="badge bg-light text-secondary border rounded-pill d-inline-flex align-items-center gap-1.5 py-2 px-3">
+                <i class="bi bi-hash"></i> Tổng cộng: @Model.Count() đoạn (chunks)
+            </span>
+        </div>
+    </div>
+
+    <!-- Chunks Container -->
+    <div class="d-flex flex-column gap-3">
+        @if (!Model.Any())
+        {
+            <div class="glass-panel text-center py-5">
+                <div class="icon-badge mx-auto mb-3"><i class="bi bi-patch-question"></i></div>
+                <h3 class="h5 text-muted">Chưa tìm thấy đoạn dữ liệu nào</h3>
+                <p class="text-muted-custom mb-0">Tài liệu này có thể chưa được xử lý thành công hoặc không chứa văn bản hợp lệ.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var chunk in Model)
+            {
+                var hasVector = chunk.EmbeddingE5 != null;
+                <div class="glass-panel border-start-thick" style="border-left: 4px solid @(hasVector ? "#4f46e5" : "#e11d48"); border-radius: 12px; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary bg-opacity-10 text-primary fw-bold" style="font-size: 0.85rem;">
+                                Đoạn #@(chunk.ChunkIndex + 1)
+                            </span>
+                            <span class="text-muted-custom small" style="font-size: 0.8rem;">
+                                ID Chức năng: @chunk.Id
+                            </span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            @if (hasVector)
+                            {
+                                <span class="badge bg-success bg-opacity-10 text-success d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-check-circle-fill"></i> Đã có Embeddings (E5)
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-rose bg-opacity-10 text-rose d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-exclamation-circle-fill"></i> Chưa có Embeddings
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    
+                    <!-- Content Block -->
+                    <div class="p-3 bg-light bg-opacity-40 rounded-3 border mb-2 chunk-text-content" style="font-size: 0.92rem; line-height: 1.6; white-space: pre-wrap; color: #374151;">
+                        @chunk.Content
+                    </div>
+
+                    <!-- Metadata details -->
+                    @if (!string.IsNullOrEmpty(chunk.MetadataJson))
+                    {
+                        <div class="mt-2">
+                            <button class="btn btn-link btn-sm p-0 d-inline-flex align-items-center gap-1 text-decoration-none text-muted-custom meta-toggle" style="font-size: 0.78rem;" onclick="toggleMeta(this)">
+                                <i class="bi bi-info-circle"></i> Xem Metadata
+                                <i class="bi bi-chevron-down meta-chevron"></i>
+                            </button>
+                            <div class="meta-json-container d-none p-2 bg-dark bg-opacity-5 rounded text-monospace mt-1.5" style="font-size: 0.75rem; font-family: monospace; color: #4b5563;">
+                                @chunk.MetadataJson
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    .border-start-thick {
+        background-color: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+    }
+    .chunk-text-content {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+</style>
+
+<script>
+    function toggleMeta(btn) {
+        var container = btn.nextElementSibling;
+        var chevron = btn.querySelector('.meta-chevron');
+        if (container.classList.contains('d-none')) {
+            container.classList.remove('d-none');
+            chevron.classList.remove('bi-chevron-down');
+            chevron.classList.add('bi-chevron-up');
+        } else {
+            container.classList.add('d-none');
+            chevron.classList.remove('bi-chevron-up');
+            chevron.classList.add('bi-chevron-down');
+        }
+    }
+</script>

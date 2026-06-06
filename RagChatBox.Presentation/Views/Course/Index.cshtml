@@ -1,0 +1,323 @@
+@model IEnumerable<RagChatBox.DAL.Entities.Course>
+@{
+    ViewData["Title"] = "Khóa học & Học liệu";
+    var viewMode = ViewBag.ViewMode as string ?? "student";
+}
+
+<div class="page-container m-0 p-0">
+
+    @* ── Page Header ───────────────────────────────────────────────────────── *@
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h2 mb-1"><i class="bi bi-journal-bookmark-fill text-gradient me-2"></i>Khóa học &amp; Học liệu</h1>
+            <p class="text-muted-custom mb-0">
+                @if (viewMode == "admin") { <text>Toàn bộ khóa học trong hệ thống</text> }
+                else if (viewMode == "teacher") { <text>Danh sách lớp học bạn đang quản lý</text> }
+                else { <text>Các lớp học bạn đã tham gia và lớp học cá nhân</text> }
+            </p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            @if (viewMode == "student")
+            {
+                <a asp-action="Search" class="btn-secondary-custom">
+                    <i class="bi bi-search"></i>
+                    Tìm lớp mới
+                </a>
+            }
+            @if (viewMode == "admin")
+            {
+                <a asp-action="Create" class="btn-premium">
+                    <i class="bi bi-plus-circle"></i>
+                    Thêm khóa học
+                </a>
+            }
+        </div>
+    </div>
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       ADMIN VIEW — bảng toàn bộ lớp học
+    ══════════════════════════════════════════════════════════════════════════ *@
+    @if (viewMode == "admin")
+    {
+        if (!Model.Any())
+        {
+            <div class="glass-panel text-center py-5">
+                <div class="icon-badge mx-auto mb-3"><i class="bi bi-inbox"></i></div>
+                <h3 class="h5">Chưa có khóa học nào</h3>
+            </div>
+        }
+        else
+        {
+            <div class="glass-panel p-0 overflow-hidden">
+                <table class="table table-custom table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-3"><i class="bi bi-book me-2"></i>Tên khóa học</th>
+                            <th><i class="bi bi-tags me-2"></i>Loại</th>
+                            <th><i class="bi bi-person me-2"></i>Giáo viên</th>
+                            <th><i class="bi bi-eye me-2"></i>Hiển thị</th>
+                            <th><i class="bi bi-files me-2"></i>Tài liệu</th>
+                            <th class="text-end px-4"><i class="bi bi-sliders me-2"></i>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="px-4 py-3 fw-semibold">@item.Name</td>
+                                <td>
+                                    @if (item.CourseType == "teacher")
+                                    {
+                                        <span class="badge bg-primary bg-opacity-25 text-primary">Lớp giáo viên</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary bg-opacity-25 text-secondary">Cá nhân</span>
+                                    }
+                                </td>
+                                <td class="text-muted-custom">@(item.CreatedByUser?.Name ?? "Chưa gán")</td>
+                                <td>
+                                    @if (item.CourseType == "teacher")
+                                    {
+                                        <span class="badge @(item.IsVisible ? "bg-success bg-opacity-25 text-success" : "bg-danger bg-opacity-25 text-danger")">
+                                            @(item.IsVisible ? "Hiện" : "Ẩn")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted-custom small">—</span>
+                                    }
+                                </td>
+                                <td class="text-muted-custom">@item.Documents.Count</td>
+                                <td class="text-end px-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-controller="Document" asp-action="Index" asp-route-courseId="@item.Id"
+                                           class="btn-secondary-custom py-1 px-3 fs-7">
+                                            <i class="bi bi-folder2-open"></i>
+                                            Tài liệu
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id"
+                                           class="btn-secondary-custom py-1 px-3 fs-7">
+                                            <i class="bi bi-pencil-square"></i>
+                                            Sửa
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id"
+                                           class="btn-danger-custom py-1 px-3 fs-7">
+                                            <i class="bi bi-trash"></i>
+                                            Xóa
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       TEACHER VIEW — grid lớp mình tạo
+    ══════════════════════════════════════════════════════════════════════════ *@
+    @if (viewMode == "teacher")
+    {
+        if (!Model.Any())
+        {
+            <div class="glass-panel text-center py-5">
+                <div class="icon-badge mx-auto mb-3"><i class="bi bi-easel2"></i></div>
+                <h3 class="h5">Bạn chưa tạo lớp học nào</h3>
+                <p class="text-muted-custom mb-4">Hãy tạo lớp học đầu tiên và bắt đầu quản lý tài liệu.</p>
+                <a asp-action="Create" class="btn-premium"><i class="bi bi-plus-circle"></i>Tạo lớp học ngay</a>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="glass-card course-card d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h3 class="h5 mb-0 text-truncate" style="max-width:70%">@item.Name</h3>
+                                    <div class="d-flex gap-1 align-items-center">
+                                        @if (item.CoursePassword != null)
+                                        {
+                                            <span title="Có mật khẩu" class="text-warning small">[Mật khẩu]</span>
+                                        }
+                                        <span class="badge @(item.IsVisible ? "bg-success bg-opacity-25 text-success" : "bg-danger bg-opacity-25 text-danger") small">
+                                            @(item.IsVisible ? "Hiện" : "Ẩn")
+                                        </span>
+                                    </div>
+                                </div>
+                                <p class="text-muted-custom text-sm mb-3" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+                                    @(string.IsNullOrWhiteSpace(item.Description) ? "Không có mô tả." : item.Description)
+                                </p>
+                                <div class="d-flex gap-3 mb-3 text-muted-custom small">
+                                    <span><i class="bi bi-files me-1"></i>@item.Documents.Count tài liệu</span>
+                                    <span><i class="bi bi-people me-1"></i>@item.Enrollments.Count học sinh</span>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a asp-controller="Document" asp-action="Index" asp-route-courseId="@item.Id"
+                                   class="btn-premium py-2 px-3 fs-7" style="box-shadow:none">
+                                    <i class="bi bi-folder2-open"></i>
+                                    Tài liệu
+                                </a>
+                                <a asp-action="MyStudents" asp-route-id="@item.Id"
+                                   class="btn-secondary-custom py-2 px-3 fs-7">
+                                    <i class="bi bi-people"></i>
+                                    Học sinh
+                                </a>
+                                <form asp-action="ToggleVisibility" asp-route-id="@item.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    @{
+                                        var visibilityIcon = item.IsVisible ? "bi-eye-slash" : "bi-eye";
+                                    }
+                                    <button type="submit" class="btn-secondary-custom py-2 px-3 fs-7">
+                                        <i class="bi @visibilityIcon"></i>
+                                        @(item.IsVisible ? "Ẩn lớp" : "Hiện lớp")
+                                    </button>
+                                </form>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn-secondary-custom py-2 px-3 fs-7">
+                                    <i class="bi bi-pencil-square"></i>
+                                    Sửa
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn-danger-custom py-2 px-3 fs-7">
+                                    <i class="bi bi-trash"></i>
+                                    Xóa
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       STUDENT VIEW — tab: Lớp đã tham gia + Lớp cá nhân
+    ══════════════════════════════════════════════════════════════════════════ *@
+    @if (viewMode == "student")
+    {
+        var enrolled = ViewBag.EnrolledCourses as List<RagChatBox.DAL.Entities.Course> ?? new();
+        var personal = ViewBag.PersonalCourses as List<RagChatBox.DAL.Entities.Course> ?? new();
+        var pendingInvitations = ViewBag.PendingInvitations as List<RagChatBox.DAL.Entities.CourseEnrollment> ?? new();
+
+        <ul class="nav nav-tabs mb-4" id="studentCourseTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="enrolled-tab" data-bs-toggle="tab"
+                        data-bs-target="#enrolled-pane" type="button" role="tab">
+                    <i class="bi bi-mortarboard me-1"></i>
+                    Lớp đã tham gia
+                    <span class="badge-count ms-1">@enrolled.Count</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="invitations-tab" data-bs-toggle="tab"
+                        data-bs-target="#invitations-pane" type="button" role="tab">
+                    <i class="bi bi-envelope-paper me-1"></i>
+                    Lời mời
+                    <span class="badge-count ms-1">@pendingInvitations.Count</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            @* Tab: Lớp đã tham gia *@
+            <div class="tab-pane fade show active" id="enrolled-pane" role="tabpanel">
+                @if (!enrolled.Any())
+                {
+                    <div class="glass-panel text-center py-5">
+                        <div class="icon-badge mx-auto mb-3"><i class="bi bi-search"></i></div>
+                        <h3 class="h5">Bạn chưa tham gia lớp nào</h3>
+                        <p class="text-muted-custom mb-4">Tìm và tham gia lớp học của giáo viên.</p>
+                        <a asp-action="Search" class="btn-premium"><i class="bi bi-search"></i>Tìm lớp học</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="row g-4">
+                        @foreach (var item in enrolled)
+                        {
+                            <div class="col-md-6 col-lg-4">
+                                <div class="glass-card course-card d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h3 class="h5 mb-0 text-truncate" style="max-width:80%">@item.Name</h3>
+                                            <div class="course-document-count">
+                                                <i class="bi bi-files"></i>
+                                                <span class="fw-semibold">@item.Documents.Count tài liệu</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-muted-custom small mb-1">
+                                            Giáo viên: @(item.CreatedByUser?.Name ?? "Chưa gán")
+                                        </p>
+                                        <p class="text-muted-custom text-sm mb-4" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+                                            @(string.IsNullOrWhiteSpace(item.Description) ? "Không có mô tả." : item.Description)
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <a asp-controller="Document" asp-action="Index" asp-route-courseId="@item.Id"
+                                           class="btn-premium py-2 px-3 fs-7 w-100" style="box-shadow:none;text-align:center">
+                                            <i class="bi bi-folder2-open"></i>
+                                            Xem tài liệu
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            @* Tab: Lời mời *@
+            <div class="tab-pane fade" id="invitations-pane" role="tabpanel">
+                @if (!pendingInvitations.Any())
+                {
+                    <div class="glass-panel text-center py-5">
+                        <div class="icon-badge mx-auto mb-3"><i class="bi bi-envelope-check"></i></div>
+                        <h3 class="h5">Không có lời mời nào</h3>
+                        <p class="text-muted-custom">Bạn không có lời mời đang chờ xử lý.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="row g-4">
+                        @foreach (var inv in pendingInvitations)
+                        {
+                            <div class="col-md-6 col-lg-4">
+                                <div class="glass-card course-card d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <h3 class="h5 mb-0 text-truncate">@inv.Course.Name</h3>
+                                        </div>
+                                        <p class="text-muted-custom small mb-1">
+                                            Giáo viên: @(inv.Course.CreatedByUser?.Name ?? "—")
+                                        </p>
+                                        @if (!string.IsNullOrWhiteSpace(inv.Course.Description))
+                                        {
+                                            <p class="text-muted-custom text-sm mb-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+                                                @inv.Course.Description
+                                            </p>
+                                        }
+                                        <p class="text-muted-custom small">
+                                            Nhận lúc: @inv.EnrolledAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                                        </p>
+                                    </div>
+                                    <form asp-action="AcceptInvitation" method="post" class="mt-3">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="courseId" value="@inv.CourseId" />
+                                        <button type="submit" class="btn-premium w-100 py-2" style="box-shadow:none">
+                                            <i class="bi bi-check2-circle"></i>
+                                            Chấp nhận lời mời
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

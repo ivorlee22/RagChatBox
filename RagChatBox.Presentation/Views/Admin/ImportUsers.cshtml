@@ -1,0 +1,128 @@
+@model RagChatBox.Presentation.Models.ImportUsersViewModel
+@{
+    ViewData["Title"] = "Nhập người dùng từ Excel / CSV";
+    var errors = ViewBag.Errors as List<string>;
+    var successCount = ViewBag.SuccessCount as int?;
+    var imported = ViewBag.Imported as bool? ?? false;
+}
+
+<div class="page-container m-0 p-0">
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-8">
+            <div class="glass-panel">
+                <div class="mb-4">
+                    <h2 class="h3 mb-1">
+                        <span class="text-gradient">
+                            <i class="bi bi-file-earmark-excel me-2"></i>Nhập người dùng từ Excel / CSV
+                        </span>
+                    </h2>
+                    <p class="text-muted-custom">Hệ thống hỗ trợ nhập danh sách học sinh, giáo viên hàng loạt từ tệp Excel (.xlsx) hoặc CSV (.csv).</p>
+                </div>
+
+                <div class="card bg-dark bg-opacity-25 border border-secondary border-opacity-25 rounded-4 p-4 mb-4">
+                    <h4 class="h6 text-white mb-3"><i class="bi bi-info-circle text-primary me-2"></i>Quy định định dạng tệp dữ liệu:</h4>
+                    <p class="text-muted-custom small mb-2">Tệp dữ liệu cần chứa hàng tiêu đề (dòng đầu tiên) với các cột tương ứng (có thể dùng tiếng Anh hoặc tiếng Việt):</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered border-secondary border-opacity-25 text-muted-custom small mb-3">
+                            <thead>
+                                <tr class="text-white">
+                                    <th>Cột</th>
+                                    <th>Tên cột được nhận diện</th>
+                                    <th>Mô tả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-semibold text-info">Tài khoản (Bắt buộc)</td>
+                                    <td><code>Username</code>, <code>Email</code>, <code>Tài khoản</code></td>
+                                    <td>Địa chỉ Email hợp lệ dùng đăng nhập.</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold text-info">Họ tên (Bắt buộc)</td>
+                                    <td><code>Name</code>, <code>Full Name</code>, <code>Họ tên</code>, <code>Họ và tên</code></td>
+                                    <td>Họ và tên đầy đủ của người dùng.</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold text-info">Mật khẩu (Tùy chọn)</td>
+                                    <td><code>Password</code>, <code>Mật khẩu</code></td>
+                                    <td>Nếu để trống, hệ thống dùng Mật khẩu mặc định dưới đây.</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold text-info">Vai trò (Tùy chọn)</td>
+                                    <td><code>Role</code>, <code>Vai trò</code></td>
+                                    <td>Giá trị: <code>student</code> (học sinh), <code>teacher</code> (giáo viên). Để trống dùng mặc định.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <form asp-action="ImportUsers" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert-custom-danger" role="alert"></div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group-custom">
+                                <label asp-for="DefaultRole" class="form-label-custom"><i class="bi bi-shield-lock me-2"></i>Vai trò mặc định</label>
+                                <select asp-for="DefaultRole" class="form-select form-control-custom">
+                                    <option value="student">Học sinh (student)</option>
+                                    <option value="teacher">Giáo viên (teacher)</option>
+                                </select>
+                                <span asp-validation-for="DefaultRole" class="validation-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group-custom">
+                                <label asp-for="DefaultPassword" class="form-label-custom"><i class="bi bi-key me-2"></i>Mật khẩu mặc định</label>
+                                <input asp-for="DefaultPassword" class="form-control-custom" placeholder="Ví dụ: School123@@" autocomplete="off" />
+                                <span asp-validation-for="DefaultPassword" class="validation-error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group-custom mt-2">
+                        <label asp-for="File" class="form-label-custom"><i class="bi bi-file-earmark-arrow-up me-2"></i>Tải lên tệp dữ liệu</label>
+                        <input asp-for="File" type="file" class="form-control-custom" accept=".xlsx,.csv" />
+                        <span asp-validation-for="File" class="validation-error"></span>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn-premium flex-grow-1">
+                            <i class="bi bi-cloud-upload"></i>
+                            Bắt đầu nhập dữ liệu
+                        </button>
+                        <a asp-action="Users" class="btn-secondary-custom"><i class="bi bi-x-circle"></i>Quay lại danh sách</a>
+                    </div>
+                </form>
+
+                @if (imported)
+                {
+                    <div class="mt-4 pt-4 border-top border-secondary border-opacity-25">
+                        <h3 class="h5 mb-3 text-white">Kết quả nhập dữ liệu:</h3>
+                        <div class="alert alert-info bg-info bg-opacity-10 border border-info border-opacity-25 text-info rounded-3 p-3">
+                            <i class="bi bi-check-circle me-2"></i>Đã thêm thành công: <strong>@successCount</strong> tài khoản.
+                        </div>
+
+                        @if (errors != null && errors.Any())
+                        {
+                            <div class="alert alert-warning bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning rounded-3 p-3 mt-3">
+                                <h4 class="h6 mb-2 fw-semibold"><i class="bi bi-exclamation-triangle me-2"></i>Danh sách lỗi xảy ra (@errors.Count):</h4>
+                                <ul class="mb-0 ps-3 small">
+                                    @foreach (var err in errors)
+                                    {
+                                        <li>@err</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chào mừng bạn đến với RAG ChatBox System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e1e8ed;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .content {
+            padding: 30px 40px;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .content h2 {
+            color: #1e3c72;
+            font-size: 20px;
+            margin-top: 0;
+        }
+        .credentials-box {
+            background-color: #f8fafc;
+            border-left: 4px solid #2a5298;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .credentials-row {
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        .credentials-row:last-child {
+            margin-bottom: 0;
+        }
+        .label {
+            font-weight: 600;
+            color: #4a5568;
+            display: inline-block;
+            width: 120px;
+        }
+        .value {
+            color: #1a202c;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            background-color: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .btn-container {
+            text-align: center;
+            margin: 30px 0 10px 0;
+        }
+        .btn {
+            background-color: #2a5298;
+            color: #ffffff !important;
+            padding: 12px 30px;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 6px;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background-color: #1e3c72;
+        }
+        .footer {
+            background-color: #f7fafc;
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #718096;
+            border-top: 1px solid #edf2f7;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                margin: 20px 10px;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RAG CHATBOT SYSTEM</h1>
+        </div>
+        <div class="content">
+            <h2>Xin chào {{Name}},</h2>
+            <p>Tài khoản học viên của bạn đã được khởi tạo thành công trên hệ thống <strong>RAG ChatBox</strong>. Dưới đây là thông tin đăng nhập của bạn:</p>
+            
+            <div class="credentials-box">
+                <div class="credentials-row">
+                    <span class="label">Tài khoản:</span>
+                    <span class="value">{{Username}}</span>
+                </div>
+                <div class="credentials-row">
+                    <span class="label">Mật khẩu tạm:</span>
+                    <span class="value">{{TemporaryPassword}}</span>
+                </div>
+            </div>
+
+            <p style="color: #e53e3e; font-size: 14px; font-weight: 500;">* Lưu ý: Để bảo mật tài khoản, vui lòng thay đổi mật khẩu ngay sau lần đăng nhập đầu tiên.</p>
+
+            <div class="btn-container">
+                <a href="{{LoginUrl}}" class="btn" target="_blank">Đăng Nhập Ngay</a>
+            </div>
+
+            <p style="margin-top: 25px;">Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ với bộ phận Quản trị viên để được hỗ trợ giải đáp kịp thời.</p>
+            <p>Trân trọng,<br /><strong>Đội ngũ RAG ChatBox</strong></p>
+        </div>
+        <div class="footer">
+            <p>Email này được gửi tự động từ hệ thống RAG ChatBox. Vui lòng không trả lời trực tiếp email này.</p>
+            <p>&copy; 2026 RAG ChatBox. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

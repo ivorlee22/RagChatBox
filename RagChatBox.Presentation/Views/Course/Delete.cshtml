@@ -1,0 +1,36 @@
+@model RagChatBox.DAL.Entities.Course
+@{
+    ViewData["Title"] = "Xóa Khóa học";
+}
+
+<div class="page-container m-0 p-0">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="glass-panel text-center">
+                <div class="fs-1 text-danger mb-3">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h2 class="h3 mb-2">Xác nhận xóa khóa học?</h2>
+                <p class="text-muted-custom mb-4">
+                    Hành động này sẽ xóa vĩnh viễn khóa học <strong class="text-dark">@Model.Name</strong> cùng với tất cả các tài liệu và đoạn ngữ cảnh đã được phân chỉ mục. Không thể hoàn tác hành động này!
+                </p>
+
+                <form asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button type="submit" class="btn-premium px-4" style="background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);">
+                            <i class="bi bi-trash"></i>
+                            Có, xác nhận xóa
+                        </button>
+                        <a asp-action="Index" class="btn-secondary-custom px-4">
+                            <i class="bi bi-x-circle"></i>
+                            Hủy bỏ
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

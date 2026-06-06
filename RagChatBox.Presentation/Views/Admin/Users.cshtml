@@ -1,0 +1,118 @@
+@model RagChatBox.Presentation.Models.UserManagementViewModel
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+}
+
+<div class="page-container m-0 p-0">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h2 mb-1"><i class="bi bi-people-fill text-gradient me-2"></i>Quản lý người dùng</h1>
+            <p class="text-muted-custom mb-0">Xem và cập nhật vai trò của tất cả tài khoản trong hệ thống.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="CreateUser" class="btn-premium">
+                <i class="bi bi-person-plus-fill me-1"></i>
+                Thêm thủ công
+            </a>
+            <a asp-action="ImportUsers" class="btn-secondary-custom">
+                <i class="bi bi-file-earmark-excel me-1"></i>
+                Nhập Excel / CSV
+            </a>
+        </div>
+    </div>
+
+    @* Role filter tabs *@
+    <div class="d-flex gap-2 mb-4 flex-wrap">
+        <a asp-action="Users" class="btn-secondary-custom @(Model.FilterRole == null ? "active" : "")">
+            <i class="bi bi-grid"></i>
+            Tất cả (@Model.Users.Count)
+        </a>
+        <a asp-action="Users" asp-route-role="admin" class="btn-secondary-custom @(Model.FilterRole == "admin" ? "active" : "")">
+            <i class="bi bi-shield-lock"></i>
+            Admin
+        </a>
+        <a asp-action="Users" asp-route-role="teacher" class="btn-secondary-custom @(Model.FilterRole == "teacher" ? "active" : "")">
+            <i class="bi bi-person-video3"></i>
+            Giáo viên
+        </a>
+        <a asp-action="Users" asp-route-role="student" class="btn-secondary-custom @(Model.FilterRole == "student" ? "active" : "")">
+            <i class="bi bi-mortarboard"></i>
+            Học sinh
+        </a>
+    </div>
+
+    @if (!Model.Users.Any())
+    {
+        <div class="glass-panel text-center py-5">
+            <div class="icon-badge mx-auto mb-3"><i class="bi bi-person-x"></i></div>
+            <h3 class="h5 text-white">Không có người dùng nào</h3>
+        </div>
+    }
+    else
+    {
+        <div class="glass-panel p-0 overflow-hidden">
+            <table class="table table-custom table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3">#</th>
+                        <th><i class="bi bi-person-badge me-2"></i>Họ tên</th>
+                        <th><i class="bi bi-at me-2"></i>Username</th>
+                        <th><i class="bi bi-award me-2"></i>Vai trò hiện tại</th>
+                        <th><i class="bi bi-calendar3 me-2"></i>Ngày tạo</th>
+                        <th class="text-end px-4"><i class="bi bi-arrow-repeat me-2"></i>Đổi vai trò</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int idx = 1; }
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td class="px-4 py-3 text-muted-custom">@idx</td>
+                            <td class="fw-semibold">@user.Name</td>
+                            <td class="text-muted-custom">@user.Username</td>
+                            <td>
+                                @switch (user.Role)
+                                {
+                                    case "admin":
+                                        <span class="badge bg-danger bg-opacity-25 text-danger">
+                                            Admin
+                                        </span>
+                                        break;
+                                    case "teacher":
+                                        <span class="badge bg-info bg-opacity-25 text-info">
+                                            Giáo viên
+                                        </span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-success bg-opacity-25 text-success">
+                                            Học sinh
+                                        </span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-muted-custom">@user.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                            <td class="text-end px-4">
+                                <form asp-action="UpdateRole" method="post" class="d-inline-flex gap-2 justify-content-end">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="UserId" value="@user.Id" />
+                                    <select name="NewRole" class="form-select form-select-sm"
+                                            style="width:auto;min-width:110px">
+                                        @if (user.Role == "student") { <option value="student" selected>Học sinh</option> } else { <option value="student">Học sinh</option> }
+                                        @if (user.Role == "teacher") { <option value="teacher" selected>Giáo viên</option> } else { <option value="teacher">Giáo viên</option> }
+                                        @if (user.Role == "admin") { <option value="admin" selected>Admin</option> } else { <option value="admin">Admin</option> }
+                                    </select>
+                                    <button type="submit" class="btn-secondary-custom py-1 px-3 fs-7">
+                                        <i class="bi bi-check2-circle"></i>
+                                        Cập nhật
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        idx++;
+                    }
+                </tbody>
+            </table>
+        </div>
+        <p class="text-muted-custom small mt-2">Tổng: @Model.Users.Count người dùng</p>
+    }
+</div>

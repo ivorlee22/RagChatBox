@@ -1,0 +1,65 @@
+## Ignore Visual Studio temporary files, build results, and user settings
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Re]leases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Log]/
+[Ll]og/
+
+# Visual Studio 2015/2017/2019/2022 cache directory or settings
+.vs/
+# Uncomment if you want to ignore the whole VS Code metadata folder
+#.vscode/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# User-specific project settings
+*.csproj.user
+*.pubxml
+*.publishsettings
+
+# SQL local database files
+*.mdf
+*.ldf
+*.ndf
+
+# Local settings and user secrets
+appsettings.Development.json
+appsettings.Local.json
+
+# Temporary uploads / data folders (if any local document storage is used)
+*.log
+*.tmp
+
+# Agent / Tool diff folders
+current_diffs/
+extracted_diffs/
+extracted_strings/
+.tempmediaStorage/
+
+# User Uploads
+**/App_Data/uploads/
+**/App_Data/temp/
+
+# Machine-specific NuGet config
+nuget.config
+[Nn]uget.config
+[Nn]u[Gg]et.[Cc]onfig

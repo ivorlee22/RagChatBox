@@ -1,0 +1,66 @@
+@model RagChatBox.Presentation.Models.CreateUserViewModel
+@{
+    ViewData["Title"] = "Thêm người dùng mới";
+}
+
+<div class="page-container m-0 p-0">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="glass-panel">
+                <div class="mb-4">
+                    <h2 class="h3 mb-1">
+                        <span class="text-gradient">
+                            <i class="bi bi-person-plus-fill me-2"></i>Thêm người dùng mới
+                        </span>
+                    </h2>
+                    <p class="text-muted-custom">Nhập thông tin bên dưới để tạo tài khoản mới.</p>
+                </div>
+
+                <form asp-action="CreateUser" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert-custom-danger" role="alert"></div>
+
+                    <div class="form-group-custom">
+                        <label asp-for="Username" class="form-label-custom"><i class="bi bi-at me-2"></i>Email / Tên đăng nhập</label>
+                        <input asp-for="Username" class="form-control-custom" placeholder="vi-du@school.edu.vn" autocomplete="off" />
+                        <span asp-validation-for="Username" class="validation-error"></span>
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label asp-for="Name" class="form-label-custom"><i class="bi bi-person me-2"></i>Họ tên đầy đủ</label>
+                        <input asp-for="Name" class="form-control-custom" placeholder="Ví dụ: Nguyễn Văn A" autocomplete="off" />
+                        <span asp-validation-for="Name" class="validation-error"></span>
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label asp-for="Password" class="form-label-custom"><i class="bi bi-key me-2"></i>Mật khẩu ban đầu</label>
+                        <input asp-for="Password" class="form-control-custom" type="password" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password" />
+                        <span asp-validation-for="Password" class="validation-error"></span>
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label asp-for="Role" class="form-label-custom"><i class="bi bi-shield-lock me-2"></i>Vai trò</label>
+                        <select asp-for="Role" class="form-select form-control-custom">
+                            <option value="student">Học sinh</option>
+                            <option value="teacher">Giáo viên</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <span asp-validation-for="Role" class="validation-error"></span>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn-premium flex-grow-1">
+                            <i class="bi bi-save"></i>
+                            Tạo tài khoản
+                        </button>
+                        <a asp-action="Users" class="btn-secondary-custom"><i class="bi bi-x-circle"></i>Hủy bỏ</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

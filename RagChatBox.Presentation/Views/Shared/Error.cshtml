@@ -1,0 +1,32 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Lỗi hệ thống";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="glass-panel text-center p-5" style="max-width: 600px; border-radius: 20px; width: 100%;">
+        <div class="fs-1 text-danger mb-4">
+            <i class="bi bi-exclamation-octagon text-gradient"></i>
+        </div>
+        
+        <h2 class="mb-3 fw-bold"><span class="text-gradient">Đã xảy ra lỗi</span></h2>
+        <p class="text-muted-custom mb-4">
+            Hệ thống đã gặp sự cố khi xử lý yêu cầu của bạn. Vui lòng thử lại sau hoặc quay về trang chủ.
+        </p>
+
+        @if (Model.ShowRequestId)
+        {
+            <div class="alert-custom-danger text-center py-2.5 px-4 mb-4 fs-7 font-monospace">
+                <strong>Request ID:</strong> <code>@Model.RequestId</code>
+            </div>
+        }
+
+        <div class="d-flex flex-column gap-2">
+            <a asp-controller="Course" asp-action="Index" class="btn-premium py-2.5">
+                <i class="bi bi-arrow-left-circle"></i>
+                Quay lại Trang chủ
+            </a>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,28 @@
+@{
+    ViewData["Title"] = "Không có quyền truy cập";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="glass-panel text-center p-5" style="max-width: 500px; border-radius: 20px;">
+        <div class="fs-1 text-danger mb-4">
+            <i class="bi bi-shield-exclamation"></i>
+        </div>
+        
+        <h2 class="mb-3 fw-bold">Không có quyền truy cập</h2>
+        
+        <p class="text-muted-custom mb-4 leading-relaxed">
+            Tài khoản của bạn không có đủ quyền hạn để truy cập trang này. Vui lòng quay lại danh sách khóa học hoặc đăng nhập bằng tài khoản Quản trị viên.
+        </p>
+
+        <div class="d-flex flex-column gap-2">
+            <a asp-controller="Course" asp-action="Index" class="btn-premium py-2.5">
+                <i class="bi bi-arrow-left-circle"></i>
+                Quay lại Khóa học
+            </a>
+            <a asp-controller="Account" asp-action="Login" class="btn-secondary-custom py-2.5">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Đăng nhập tài khoản khác
+            </a>
+        </div>
+    </div>
+</div>
